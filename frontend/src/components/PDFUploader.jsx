@@ -38,15 +38,7 @@ const PDFUploader = () => {
           accept="application/pdf"
           onChange={handleFileChange}
         />
-        <div
-          onDrop={handleDrop}
-          onDragOver={handleDragOver}
-          style={{
-            border: "2px dashed #ccc",
-            padding: "20px",
-            marginTop: "10px",
-          }}
-        >
+        <div onDrop={handleDrop} onDragOver={handleDragOver}>
           Drop PDF file here
         </div>
         <button type="submit">Upload PDF</button>
@@ -54,7 +46,7 @@ const PDFUploader = () => {
       {text && (
         <div>
           <h3>Extracted Text:</h3>
-          <pre>{text}</pre>
+          <p className="text-left">{text}</p>
         </div>
       )}
     </div>

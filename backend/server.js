@@ -2,9 +2,13 @@ const express = require('express');
 const multer = require('multer');
 const fs = require('fs');
 const pdfParse = require('pdf-parse');
+const cors = require('cors'); // Import the cors package
 
 const app = express();
 const PORT = 3000;
+
+// Enable CORS for all routes
+app.use(cors());
 
 // Set up multer for file uploads
 const upload = multer({ dest: 'uploads/' });
