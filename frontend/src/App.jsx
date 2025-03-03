@@ -1,10 +1,10 @@
 import "./App.css";
-import PDFUploader from "./components/PDFUploader";
+import PaginatedPDFViewer from "./components/PaginatedPDFViewer";
 
 function App() {
   return (
     <>
-      <PDFUploader />
+      <PaginatedPDFViewer />
     </>
   );
 }
