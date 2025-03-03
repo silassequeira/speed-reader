@@ -1,0 +1,20 @@
+{
+  "name": "speed-reader",
+  "version": "1.0.0",
+  "description": "Minimal speed reader, from a static website made using React and Node",
+  "main": "index.js",
+  "scripts": {
+    "build": "cd frontend && npm run build",
+    "installserver": "cd server && npm install && cd ..",
+    "installfrontend": "cd frontend && npm install && cd ..",
+    "server": "cd backend && node server",
+    "viteapp": "cd frontend && npm run dev",
+    "frontend": "start chrome http://localhost:5173/ && npm-run-all -p server viteapp",
+    "app": "npm run server"
+  },
+  "keywords": [
+    "reactjs"
+  ],
+  "author": "Silas Sequeira",
+  "license": "MIT"
+}
