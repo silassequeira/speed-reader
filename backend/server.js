@@ -14,7 +14,7 @@ app.post('/upload-pdf', upload.single('pdf'), async (req, res) => {
         const dataBuffer = fs.readFileSync(req.file.path);
         const data = await pdfParse(dataBuffer);
 
-        // Enhanced text processing
+
         const processedText = processPDFText(data.text);
 
         res.send(processedText);
@@ -27,22 +27,22 @@ app.post('/upload-pdf', upload.single('pdf'), async (req, res) => {
 });
 
 function processPDFText(rawText) {
-    // Step 1: Normalize line breaks and whitespace
-    let text = rawText
-        .replace(/(\r\n|\n|\r)/gm, '\n')  // Standardize line breaks
-        .replace(/\s+/g, ' ');             // Collapse multiple spaces
 
-    // Step 2: Merge hyphenated words
+    let text = rawText
+        .replace(/(\r\n|\n|\r)/gm, '\n')
+        .replace(/\s+/g, ' ');
+
+
     text = text.replace(/(\w+)-\n(\w+)/g, '$1$2');
 
-    // Step 3: Identify paragraphs
-    const paragraphs = text.split(/\n{2,}/); // Split on 2+ newlines
 
-    // Step 4: Clean paragraphs and join with markers
+    const paragraphs = text.split(/\n{2,}/);
+
+
     return paragraphs
-        .map(p => p.replace(/\n/g, ' ').trim()) // Remove inner line breaks
-        .filter(p => p.length > 0)              // Remove empty paragraphs
-        .join('\n%%PAGE_BREAK%%\n');           // Add custom paragraph marker
+        .map(p => p.replace(/\n/g, ' ').trim())
+        .filter(p => p.length > 0)
+        .join('\n%%PAGE_BREAK%%\n');
 }
 
 app.listen(3000, () => console.log('Server running on port 3000'));

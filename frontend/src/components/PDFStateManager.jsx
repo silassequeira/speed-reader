@@ -1,70 +1,73 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import FileUploader from "./FileUploader";
 import Loader from "./Loader";
 import PDFViewer from "./PDFViewer";
 import uploadPDF from "../services/pdfService";
 
-const StateManager = () => {
-  const [status, setStatus] = useState("idle"); // "idle", "loading", "display"
+const PDFStateManager = () => {
+  const [status, setStatus] = useState("idle");
   const [extractedText, setText] = useState("");
   const [pages, setPages] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Configuration constants
   const CONTAINER_WIDTH = 636;
   const LINE_HEIGHT = 26;
+  const CONTAINER_HEIGHT = 676;
+  const FONT_STYLE = "18px Roboto, sans-serif";
 
-  // Memoized text measurement
-  const measureText = (() => {
+  const measureText = useMemo(() => {
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
     return (text) => {
-      ctx.font = "18px Roboto, sans-serif";
+      ctx.font = FONT_STYLE;
       return ctx.measureText(text).width;
     };
-  })();
+  }, [FONT_STYLE]);
 
-  const calculateLines = (paragraph) => {
-    const words = paragraph.split(" ");
-    let line = "";
-    let lines = 1;
+  const calculateLines = useCallback(
+    (paragraph) => {
+      const words = paragraph.split(" ");
+      let line = "";
+      let lines = 1;
 
-    for (const word of words) {
-      const testLine = line ? `${line} ${word}` : word;
-      const width = measureText(testLine);
+      for (const word of words) {
+        const testLine = line ? `${line} ${word}` : word;
+        const width = measureText(testLine);
 
-      if (width > CONTAINER_WIDTH) {
-        lines++;
-        line = word;
-      } else {
-        line = testLine;
+        if (width > CONTAINER_WIDTH) {
+          lines++;
+          line = word;
+        } else {
+          line = testLine;
+        }
       }
-    }
 
-    return lines;
-  };
+      return lines;
+    },
+    [measureText, CONTAINER_WIDTH]
+  );
 
   useEffect(() => {
     if (!extractedText) return;
 
     const createPages = (paragraphs) => {
       const pages = [];
-      let currentPage = [];
+      let currentPageArr = [];
       let currentHeight = 0;
 
       for (const paragraph of paragraphs) {
         const lines = calculateLines(paragraph);
         const neededHeight = lines * LINE_HEIGHT;
 
-        if (currentHeight + neededHeight > 676) {
-          if (currentPage.length > 0) {
-            pages.push([...currentPage]);
-            currentPage = [];
+        if (currentHeight + neededHeight > CONTAINER_HEIGHT) {
+          if (currentPageArr.length > 0) {
+            pages.push([...currentPageArr]);
+            currentPageArr = [];
             currentHeight = 0;
           }
 
-          if (neededHeight > 676) {
-            const maxLinesPerPage = Math.floor(676 / LINE_HEIGHT);
+          if (neededHeight > CONTAINER_HEIGHT) {
+            const maxLinesPerPage = Math.floor(CONTAINER_HEIGHT / LINE_HEIGHT);
             let remainingText = paragraph;
 
             while (remainingText) {
@@ -90,16 +93,16 @@ const StateManager = () => {
               pages.push(pageLines);
             }
           } else {
-            currentPage.push(paragraph);
+            currentPageArr.push(paragraph);
             currentHeight += neededHeight;
           }
         } else {
-          currentPage.push(paragraph);
+          currentPageArr.push(paragraph);
           currentHeight += neededHeight;
         }
       }
 
-      if (currentPage.length > 0) pages.push(currentPage);
+      if (currentPageArr.length > 0) pages.push(currentPageArr);
       return pages;
     };
 
@@ -111,7 +114,7 @@ const StateManager = () => {
     setPages(newPages);
     setCurrentPage(1);
     setStatus("display");
-  }, [extractedText]);
+  }, [extractedText, calculateLines, measureText]);
 
   const handleUpload = async (file) => {
     try {
@@ -148,4 +151,4 @@ const StateManager = () => {
   );
 };
 
-export default StateManager;
+export default PDFStateManager;

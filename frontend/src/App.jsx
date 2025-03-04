@@ -1,10 +1,10 @@
 import "./App.css";
-import StateManager from "./components/StateManager";
+import PDFStateManager from "./components/PDFStateManager";
 
 function App() {
   return (
     <>
-      <StateManager />
+      <PDFStateManager />
     </>
   );
 }
