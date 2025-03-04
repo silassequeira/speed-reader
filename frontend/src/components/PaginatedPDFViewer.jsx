@@ -9,7 +9,7 @@ const PaginatedPDFViewer = () => {
 
   // Configuration constants
   const CONTAINER_WIDTH = 636;
-  const CONTAINER_HEIGHT = 900;
+  const CONTAINER_HEIGHT = 676;
   const LINE_HEIGHT = 26;
   const FONT_SIZE = 18;
   const FONT = `${FONT_SIZE}px Roboto, sans-serif`;
@@ -44,65 +44,65 @@ const PaginatedPDFViewer = () => {
     return lines;
   };
 
-  const createPages = (paragraphs) => {
-    const pages = [];
-    let currentPage = [];
-    let currentHeight = 0;
+  useEffect(() => {
+    if (!extractedText) return;
 
-    for (const paragraph of paragraphs) {
-      const lines = calculateLines(paragraph);
-      const neededHeight = lines * LINE_HEIGHT;
+    const createPages = (paragraphs) => {
+      const pages = [];
+      let currentPage = [];
+      let currentHeight = 0;
 
-      if (currentHeight + neededHeight > CONTAINER_HEIGHT) {
-        if (currentPage.length > 0) {
-          pages.push([...currentPage]);
-          currentPage = [];
-          currentHeight = 0;
-        }
+      for (const paragraph of paragraphs) {
+        const lines = calculateLines(paragraph);
+        const neededHeight = lines * LINE_HEIGHT;
 
-        if (neededHeight > CONTAINER_HEIGHT) {
-          const maxLinesPerPage = Math.floor(CONTAINER_HEIGHT / LINE_HEIGHT);
-          let remainingText = paragraph;
+        if (currentHeight + neededHeight > CONTAINER_HEIGHT) {
+          if (currentPage.length > 0) {
+            pages.push([...currentPage]);
+            currentPage = [];
+            currentHeight = 0;
+          }
 
-          while (remainingText) {
-            const pageLines = [];
-            let lineCount = 0;
+          if (neededHeight > CONTAINER_HEIGHT) {
+            const maxLinesPerPage = Math.floor(CONTAINER_HEIGHT / LINE_HEIGHT);
+            let remainingText = paragraph;
 
-            while (lineCount < maxLinesPerPage && remainingText) {
-              let line = "";
-              let words = remainingText.split(" ");
+            while (remainingText) {
+              const pageLines = [];
+              let lineCount = 0;
 
-              while (words.length > 0) {
-                const testLine = line ? `${line} ${words[0]}` : words[0];
-                if (measureText(testLine) > CONTAINER_WIDTH) break;
-                line = testLine;
-                words.shift();
+              while (lineCount < maxLinesPerPage && remainingText) {
+                let line = "";
+                let words = remainingText.split(" ");
+
+                while (words.length > 0) {
+                  const testLine = line ? `${line} ${words[0]}` : words[0];
+                  if (measureText(testLine) > CONTAINER_WIDTH) break;
+                  line = testLine;
+                  words.shift();
+                }
+
+                pageLines.push(line);
+                remainingText = words.join(" ");
+                lineCount++;
               }
 
-              pageLines.push(line);
-              remainingText = words.join(" ");
-              lineCount++;
+              // Push array of lines instead of joined string
+              pages.push(pageLines); // Fixed line
             }
-
-            // Push array of lines instead of joined string
-            pages.push(pageLines); // Fixed line
+          } else {
+            currentPage.push(paragraph);
+            currentHeight += neededHeight;
           }
         } else {
           currentPage.push(paragraph);
           currentHeight += neededHeight;
         }
-      } else {
-        currentPage.push(paragraph);
-        currentHeight += neededHeight;
       }
-    }
 
-    if (currentPage.length > 0) pages.push(currentPage);
-    return pages;
-  };
-
-  useEffect(() => {
-    if (!extractedText) return;
+      if (currentPage.length > 0) pages.push(currentPage);
+      return pages;
+    };
 
     const paragraphs = extractedText
       .split("\n%%PAGE_BREAK%%\n")
@@ -153,49 +153,20 @@ const PaginatedPDFViewer = () => {
           className="dropzone"
           onDrop={handleDrop}
           onDragOver={handleDragOver}
-          style={{
-            border: "2px dashed #ccc",
-            padding: "20px",
-            textAlign: "center",
-            marginBottom: "20px",
-          }}
         >
           <input
             type="file"
             accept="application/pdf"
             onChange={handleFileChange}
-            style={{ marginBottom: "10px" }}
           />
           <p>or drop PDF file here</p>
         </div>
-        <button
-          type="submit"
-          style={{
-            padding: "8px 16px",
-            backgroundColor: "#4285f4",
-            color: "white",
-            border: "none",
-            borderRadius: "4px",
-            cursor: "pointer",
-            marginBottom: "20px",
-          }}
-        >
-          Upload PDF
-        </button>
+        <button type="submit">Upload PDF</button>
       </form>
 
       {pages.length > 0 && (
         <div>
-          <div
-            className="viewer-container"
-            style={{
-              width: `${CONTAINER_WIDTH}px`,
-              height: `${CONTAINER_HEIGHT}px`,
-              font: FONT,
-              lineHeight: `${LINE_HEIGHT}px`,
-              overflow: "hidden",
-            }}
-          >
+          <div className="viewer-container">
             {pages[currentPage - 1]?.map((para, i) => (
               <p key={`${currentPage}-${i}`} className="lineHeight">
                 {para}

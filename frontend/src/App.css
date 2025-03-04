@@ -50,3 +50,10 @@
 .lineHeight {
   margin: 0 0 0.25em 0;
 }
+
+
+.viewer-container {
+  width: 636px;
+  height: 900px;
+  overflow: hidden;
+}
