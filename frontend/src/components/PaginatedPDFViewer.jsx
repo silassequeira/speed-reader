@@ -6,6 +6,7 @@ const PaginatedPDFViewer = () => {
   const [extractedText, setText] = useState("");
   const [pages, setPages] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [status, setStatus] = useState("idle"); // "idle", "loading", "display"
 
   // Configuration constants
   const CONTAINER_WIDTH = 636;
@@ -87,8 +88,7 @@ const PaginatedPDFViewer = () => {
                 lineCount++;
               }
 
-              // Push array of lines instead of joined string
-              pages.push(pageLines); // Fixed line
+              pages.push(pageLines);
             }
           } else {
             currentPage.push(paragraph);
@@ -108,9 +108,10 @@ const PaginatedPDFViewer = () => {
       .split("\n%%PAGE_BREAK%%\n")
       .filter((p) => p.trim().length > 0);
 
-    const pages = createPages(paragraphs);
-    setPages(pages);
+    const newPages = createPages(paragraphs);
+    setPages(newPages);
     setCurrentPage(1);
+    setStatus("display");
   }, [extractedText]);
 
   const handleFileChange = (event) => {
@@ -131,10 +132,12 @@ const PaginatedPDFViewer = () => {
     if (!file) return;
 
     try {
+      setStatus("loading");
       const text = await uploadPDF(file);
       setText(text);
     } catch (error) {
       console.error("Error uploading file:", error);
+      // Optionally, you might reset the state or show an error message here
     }
   };
 
@@ -146,26 +149,45 @@ const PaginatedPDFViewer = () => {
     if (currentPage > 1) setCurrentPage(currentPage - 1);
   };
 
+  // This function resets all state back to the initial upload stage
+  const handleClose = () => {
+    setFile(null);
+    setText("");
+    setPages([]);
+    setCurrentPage(1);
+    setStatus("idle");
+  };
+
   return (
     <div className="pdf-viewer">
-      <form onSubmit={handleSubmit}>
-        <div
-          className="dropzone"
-          onDrop={handleDrop}
-          onDragOver={handleDragOver}
-        >
-          <input
-            type="file"
-            accept="application/pdf"
-            onChange={handleFileChange}
-          />
-          <p>or drop PDF file here</p>
-        </div>
-        <button type="submit">Upload PDF</button>
-      </form>
+      {status === "idle" && (
+        <form onSubmit={handleSubmit}>
+          <div
+            className="dropzone"
+            onDrop={handleDrop}
+            onDragOver={handleDragOver}
+          >
+            <input
+              type="file"
+              accept="application/pdf"
+              onChange={handleFileChange}
+            />
+            <p>or drop PDF file here</p>
+          </div>
+          <button type="submit">Upload PDF</button>
+        </form>
+      )}
 
-      {pages.length > 0 && (
+      {status === "loading" && (
+        <div className="loader">
+          {/* Replace with a loader/spinner if available */}
+          <p>Loading... Please wait.</p>
+        </div>
+      )}
+
+      {status === "display" && pages.length > 0 && (
         <div>
+          <button onClick={handleClose}>Close</button>
           <div className="viewer-container">
             {pages[currentPage - 1]?.map((para, i) => (
               <p key={`${currentPage}-${i}`} className="lineHeight">
@@ -173,7 +195,6 @@ const PaginatedPDFViewer = () => {
               </p>
             ))}
           </div>
-
           <div className="pagination-controls">
             <button onClick={prevPage} disabled={currentPage === 1}>
               Previous Page
