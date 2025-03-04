@@ -1,10 +1,10 @@
 import "./App.css";
-import PaginatedPDFViewer from "./components/PaginatedPDFViewer";
+import StateManager from "./components/StateManager";
 
 function App() {
   return (
     <>
-      <PaginatedPDFViewer />
+      <StateManager />
     </>
   );
 }
