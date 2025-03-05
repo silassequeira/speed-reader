@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;800&display=swap');
 
 :root {
 
@@ -6,6 +6,7 @@
   --grey: #5A5A5A;
   --light-grey: #7C7C7C;
   --light: #D9D9D9;
+  --green: #00E53D;
   --transition: all 0.3s ease;
   --font: 'Roboto', sans-serif;
 
@@ -101,10 +102,63 @@ button {
   width: auto;
 }
 
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+/* Chrome, Safari, Edge, Opera */
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.grey {
+  color: var(--grey);
+}
+
+.bold {
+  font-weight: 800;
+}
+
+.flex-justify {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .flex-center {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.flex-end {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.width-fit {
+  width: fit-content;
+}
+
+.margin-top-3 {
+  margin-top: 3rem;
+}
+
+.margin-top-4 {
+  margin-top: 4rem;
+}
+
+.padding-bottom-1 {
+  padding-bottom: 1rem;
 }
 
 .text-left {
