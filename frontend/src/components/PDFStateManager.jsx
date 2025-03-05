@@ -11,7 +11,6 @@ const PDFStateManager = () => {
   const [extractedText, setExtractedText] = useState("");
   const [pages, setPages] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalWords, setTotalWords] = useState(0);
   const [allWords, setAllWords] = useState([]);
   const [cumulativeWordCounts, setCumulativeWordCounts] = useState([]);
   const [displayState, setDisplayState] = useState("idleDisplay"); // New state for sub-states
@@ -70,7 +69,6 @@ const PDFStateManager = () => {
       .split(" ")
       .filter((word) => word.trim() !== "");
     setAllWords(allWords);
-    setTotalWords(allWords.length);
 
     const paragraphs = extractedText
       .split("\n%%PAGE_BREAK%%\n")
@@ -136,7 +134,7 @@ const PDFStateManager = () => {
     setPages(newPages);
     setCurrentPage(1);
     setStatus("display");
-    setDisplayState("idleDisplay"); // Set to idleDisplay when a file is uploaded
+    setDisplayState("idleDisplay");
 
     let currentWordCount = 0;
     const cumulative = [];
@@ -222,24 +220,18 @@ const PDFStateManager = () => {
             <button onClick={handlePlayPause}>
               {displayState === "playing" ? "Pause" : "Play"}
             </button>
-            <div>
-              {displayState === "idleDisplay"
-                ? totalWords
-                : displayState === "playing"
-                ? currentWordIndex + 1
-                : currentWordIndex}
-            </div>
             <div>{fileName}</div> {/* Display the file name */}
             <SpanCounter onSpanCount={handleSpanCount} />
           </div>
           <PDFViewer
             pages={pages}
             currentPage={currentPage}
-            onPageChange={setCurrentPage}
+            onPageChange={(newPage) => setCurrentPage(newPage)}
             allWords={allWords}
-            currentWordIndex={currentWordIndex}
+            currentWordIndex={currentWordIndex} // Current word state
             displayState={displayState}
             cumulativeWordCounts={cumulativeWordCounts}
+            onCurrentWordChange={(wordIndex) => setCurrentWordIndex(wordIndex)}
           />
         </>
       )}
