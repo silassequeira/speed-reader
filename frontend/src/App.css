@@ -57,3 +57,72 @@
   height: 900px;
   overflow: hidden;
 }
+
+.viewer-container {
+  padding: 20px;
+  background-color: #2d2d2d;
+  color: #d9d9d9;
+  white-space: pre-wrap;
+  line-height: 1.5;
+}
+
+.pagination-controls {
+  margin-top: 10px;
+  text-align: center;
+}
+
+.pagination-controls input {
+  width: 50px;
+  padding: 5px;
+  margin: 0 5px;
+}
+
+.word {
+  padding: 2px;
+}
+
+.word-idle {
+  color: #d9d9d9;
+}
+
+.word-playing {
+  color: #d9d9d9;
+}
+
+.word-highlighted-end {
+  color: green;
+}
+
+.word-other {
+  color: #5a5a5a;
+}
+
+.file-uploader-container {
+  width: 400px;
+  height: 250px;
+  border: 2px dashed #cccccc;
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.file-uploader-container.idle {
+  background-color: #f8f9fa;
+}
+
+.file-uploader-container.uploaded {
+  background-color: #e6f3ff;
+}
+
+.file-uploader-text {
+  color: #6c757d;
+  user-select: none;
+}
+
+.file-uploader-text.uploaded {
+  color: #28a745;
+}
