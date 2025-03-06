@@ -10,7 +10,9 @@
     "server": "cd backend && node server",
     "viteapp": "cd frontend && npm run dev",
     "frontend": "start chrome http://localhost:5173/ && npm-run-all -p server viteapp",
-    "app": "start chrome http://localhost:3000/ && npm run server"
+    "app": "start chrome http://localhost:3000/ && npm run server",
+    "electron": "cd electron && npm start",
+    "electronBuild": "cd electron && cd frontend && npm run build"
   },
   "keywords": [
     "reactjs"
