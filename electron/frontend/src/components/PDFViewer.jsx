@@ -12,6 +12,7 @@ const PDFViewer = ({
   cumulativeWordCounts,
   onCurrentWordChange,
   elementType,
+  onDisplayStateChange, // New prop to handle display state change
 }) => {
   const [inputPage, setInputPage] = React.useState(currentPage.toString());
   const [inputWord, setInputWord] = React.useState(""); // New state for word input
@@ -79,6 +80,11 @@ const PDFViewer = ({
     onPageChange(targetPage);
     onCurrentWordChange(wordNumber); // Trigger parent to update word index
     setInputWord(""); // Clear input field
+
+    // Change display state to "paused" if it was "idleDisplay"
+    if (displayState === "idleDisplay") {
+      onDisplayStateChange("paused");
+    }
   };
 
   if (elementType === "text") {
@@ -140,6 +146,7 @@ const PDFViewer = ({
             type="number"
             value={inputWord}
             onChange={handleWordInputChange}
+            title="Enter word number"
             onKeyDown={(e) => e.key === "Enter" && handleWordSubmit()}
             placeholder={
               displayState === "idleDisplay"
@@ -160,6 +167,7 @@ const PDFViewer = ({
               type="number"
               value={inputPage}
               onChange={handlePageInputChange}
+              title="Enter page number"
               onKeyDown={(e) => e.key === "Enter" && handlePageSubmit()}
               min="1"
               max={pages.length}
@@ -177,15 +185,16 @@ const PDFViewer = ({
 };
 
 PDFViewer.propTypes = {
-  pages: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)).isRequired,
-  currentPage: PropTypes.number.isRequired,
-  onPageChange: PropTypes.func.isRequired,
-  allWords: PropTypes.arrayOf(PropTypes.string).isRequired,
-  currentWordIndex: PropTypes.number.isRequired,
-  displayState: PropTypes.string.isRequired,
-  cumulativeWordCounts: PropTypes.arrayOf(PropTypes.number).isRequired,
-  onCurrentWordChange: PropTypes.func.isRequired, // New prop
+  pages: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.string)),
+  currentPage: PropTypes.number,
+  onPageChange: PropTypes.func,
+  allWords: PropTypes.arrayOf(PropTypes.string),
+  currentWordIndex: PropTypes.number,
+  displayState: PropTypes.string,
+  cumulativeWordCounts: PropTypes.arrayOf(PropTypes.number),
+  onCurrentWordChange: PropTypes.func,
   elementType: PropTypes.string.isRequired,
+  onDisplayStateChange: PropTypes.func.isRequired, // New prop type
 };
 
 export default PDFViewer;
