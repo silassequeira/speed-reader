@@ -57,8 +57,14 @@
   cursor: pointer;
 }
 
+.file-uploader-container:hover {
+  background-color: var(--black);
+  opacity: 0.5;
+  transition: var(--transition);
+}
+
 .loading-position {
-  position: absolute;
+  position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -116,6 +122,12 @@
   background-color: transparent;
 }
 
+.minimal-input:hover {
+  background-color: var(--black);
+  opacity: 0.7;
+  transition: var(--transition);
+}
+
 .minimal-input::placeholder {
   color: var(--grey);
 }
@@ -140,6 +152,7 @@
   background: none;
   color: inherit;
   border: none;
+  border-radius: 0;
   padding: 0;
   font: inherit;
   cursor: pointer;
@@ -150,12 +163,46 @@
   outline: none;
 }
 
+.play-button:hover {
+  background-color: var(--black);
+  opacity: 0.7;
+  transition: var(--transition);
+}
+
+.pdf-viewer {
+  position: relative;
+}
+
 .close-button {
   position: absolute;
-  top: 10px;
-  right: 25px;
+  top: -5px;
+  right: -25px;
   padding: 0.5em;
   cursor: pointer;
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.close-button:hover {
+  background-color: var(--dark);
+  opacity: 0.7;
+  transition: var(--transition);
+}
+
+.close-button svg {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+.speed-meter {
+  position: absolute;
+  top: 5px;
+  left: 0;
+  padding: 0.5em;
+  width: 1.25rem;
+  height: 1.25rem;
+  font-size: 0.75rem;
+  color: var(--grey);
 }
 
 #custom-title-bar {
@@ -167,5 +214,47 @@
 }
 
 .title-bar-icons {
+  width: 2rem;
+  height: 2rem;
+  margin-right: 1rem;
+}
+
+.title-bar-icons:hover {
+  background-color: var(--dark);
+  opacity: 0.7;
+  transition: var(--transition);
+}
+
+.title-bar-icons svg {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+.bar {
+  height: 50px;
+  border-bottom: 1px dotted var(--grey);
+}
+
+.title-bar {
+  -webkit-app-region: drag;
+  height: 40px;
+  background-color: var(--dark);
+  display: flex;
+  align-items: flex-end;
+  padding: 0 10px;
+}
+
+.title-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: inherit;
   padding: 0.5rem;
+}
+
+.logo {
+  width: 1.5rem;
+  position: absolute;
+  left: 1.25rem;
+  top: 0.85rem;
 }

@@ -12,16 +12,20 @@ async function main() {
     // Create the main browser window
     window = new BrowserWindow({
         width: 1000,
-        height: 700,
+        height: 900,
         frame: false, // Frameless window
+        icon: path.join(__dirname, 'assets', 'logov3.png'), // Set the window icon
         transparent: true, // Enable transparency
         backgroundColor: '#00000000', // Transparent background
         webPreferences: {
-            preload: path.join(__dirname, 'renderer.js'), // Connect to preloader.js
+            preload: path.join(__dirname, 'preloader.js'), // Connect to preloader.js
             contextIsolation: true, // Better security
-            devTools: true, // Enable DevTools
+            //devTools: true, // Enable DevTools
         },
     });
+
+    // Open DevTools on start
+    //window.webContents.openDevTools();
 
     // Handle window close
     window.on('closed', () => {
@@ -56,7 +60,7 @@ ipcMain.on('window-maximize', () => {
     if (window) {
         if (isCustomMaximized) {
             // Restore to original dimensions
-            window.setBounds({ width: 1000, height: 700, x: 100, y: 100 }); // Adjust position as needed
+            window.setBounds({ width: 1000, height: 900, x: 100, y: 100 }); // Adjust position as needed
             isCustomMaximized = false;
         } else {
             // Maximize the window

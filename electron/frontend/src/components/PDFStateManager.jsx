@@ -19,11 +19,14 @@ const PDFStateManager = () => {
   const [fileName, setFileName] = useState("");
   const [spanCount, setSpanCount] = useState(0);
   const [currentSpanCount, setCurrentSpanCount] = useState(0);
+  const [intervalValue, setIntervalValue] = useState(250); // State for interval value
 
   const CONTAINER_WIDTH = 636;
   const LINE_HEIGHT = 26;
   const CONTAINER_HEIGHT = 676;
   const FONT_STYLE = "18px Roboto, sans-serif";
+  const MIN_INTERVAL = 50; // Minimum interval value
+  const MAX_INTERVAL = 1000; // Maximum interval value
 
   const handleSpanCount = useCallback((count) => {
     setSpanCount(count);
@@ -155,7 +158,6 @@ const PDFStateManager = () => {
       setIntervalId(null);
       setDisplayState("paused");
     } else {
-      const interval = 250;
       const newIntervalId = setInterval(() => {
         if (currentWordIndex < allWords.length - 1) {
           setCurrentWordIndex((prev) => prev + 1);
@@ -164,7 +166,7 @@ const PDFStateManager = () => {
           clearInterval(newIntervalId);
           setDisplayState("paused");
         }
-      }, interval);
+      }, intervalValue);
       setIntervalId(newIntervalId);
       setDisplayState("playing");
     }
@@ -191,7 +193,6 @@ const PDFStateManager = () => {
   };
 
   const handleClose = () => {
-    // console.log("Closing and resetting state...");
     setExtractedText("");
     setPages([]);
     setCurrentPage(1);
@@ -199,15 +200,26 @@ const PDFStateManager = () => {
     setCurrentWordIndex(0);
     setCurrentSpanCount(0);
     setStatus("idle");
-    console.log("State after reset:", {
-      extractedText: "",
-      pages: [],
-      currentPage: 1,
-      displayState: "idleDisplay",
-      currentWordIndex: 0,
-      status: "idle",
-    });
   };
+
+  const handleKeyDown = (event) => {
+    if (event.key === "ArrowUp") {
+      setIntervalValue((prevInterval) =>
+        Math.max(prevInterval - 50, MIN_INTERVAL)
+      );
+    } else if (event.key === "ArrowDown") {
+      setIntervalValue((prevInterval) =>
+        Math.min(prevInterval + 50, MAX_INTERVAL)
+      );
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
 
   const svgClose = (
     <svg
@@ -268,7 +280,7 @@ const PDFStateManager = () => {
   }
 
   return (
-    <div className="pdf-viewer">
+    <div className="pdf-viewer margin-top-2">
       {status === "idle" && <FileUploader onUpload={handleUpload} />}
       {status === "loading" && <Loader />}
       {status === "display" && pages.length > 0 && (
@@ -279,6 +291,7 @@ const PDFStateManager = () => {
           >
             {svgClose}
           </button>
+          <div className="speed-meter">{intervalValue}ms</div>
           <div className="margin-top-4">
             <div className={className}>{fileName}</div>{" "}
             <SpanCounter onSpanCount={handleSpanCount} />
@@ -298,7 +311,10 @@ const PDFStateManager = () => {
           </div>
           <div className="flex-center">
             <div className="flex-end width-fit" style={{ flex: 1 }}>
-              <button className="unstyled-button " onClick={handlePlayPause}>
+              <button
+                className="unstyled-button play-button"
+                onClick={handlePlayPause}
+              >
                 {displayState === "playing" ? svgPause : svgPlay}
               </button>
             </div>
