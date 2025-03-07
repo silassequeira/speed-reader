@@ -11,7 +11,15 @@ const countSpans = (onSpanCount) => {
   });
 };
 
-const SpanCounter = ({ onSpanCount }) => {
+// Function to detect the index of the clicked span
+const detectClickedSpanIndex = (event) => {
+  const spans = Array.from(document.querySelectorAll("span"));
+  const clickedSpan = event.target;
+  const spanIndex = spans.indexOf(clickedSpan);
+  return spanIndex;
+};
+
+const SpanCounter = ({ onSpanCount, onSpanClick }) => {
   useEffect(() => {
     // Initial count
     countSpans(onSpanCount).then(() => {
@@ -30,9 +38,22 @@ const SpanCounter = ({ onSpanCount }) => {
       subtree: true,
     });
 
+    // Event listener for span clicks
+    const handleSpanClick = (event) => {
+      const spanIndex = detectClickedSpanIndex(event);
+      if (spanIndex !== -1) {
+        onSpanClick(spanIndex);
+      }
+    };
+
+    document.body.addEventListener("click", handleSpanClick);
+
     // Cleanup
-    return () => observer.disconnect();
-  }, [onSpanCount]); // Dependency array includes the callback
+    return () => {
+      observer.disconnect();
+      document.body.removeEventListener("click", handleSpanClick);
+    };
+  }, [onSpanCount, onSpanClick]); // Dependency array includes the callbacks
 
   return null;
 };

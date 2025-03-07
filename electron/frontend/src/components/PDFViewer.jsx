@@ -17,15 +17,38 @@ const PDFViewer = ({
   const [inputPage, setInputPage] = React.useState(currentPage.toString());
   const [inputWord, setInputWord] = React.useState(""); // New state for word input
 
+  // Effect to update the input page state when the current page changes
   useEffect(() => {
     setInputPage(currentPage.toString());
   }, [currentPage]);
 
-  // Page navigation handlers
+  // Handles changes in the page input field
   const handlePageInputChange = (e) => {
-    setInputPage(e.target.value);
+    const value = e.target.value;
+    if (/^\d*$/.test(value)) {
+      // Ensures only numbers or empty input
+      setInputPage(value);
+    }
   };
 
+  // Handles key down events in the page input field
+  const handlePageKeyDown = (e) => {
+    if (e.key === "Enter") {
+      handlePageSubmit(); // Confirm input on Enter
+    } else if (e.key === "ArrowRight") {
+      setInputPage((prev) => {
+        const newPage = (prev ? parseInt(prev, 10) : currentPage) + 1;
+        return Math.min(newPage, pages.length).toString(); // Ensure within range
+      });
+    } else if (e.key === "ArrowLeft") {
+      setInputPage((prev) => {
+        const newPage = (prev ? parseInt(prev, 10) : currentPage) - 1;
+        return Math.max(newPage, 1).toString(); // Ensure within range
+      });
+    }
+  };
+
+  // Handles the submission of the page input field
   const handlePageSubmit = () => {
     const rawInput = inputPage.trim();
     let pageNumber = parseInt(rawInput, 10);
@@ -40,11 +63,32 @@ const PDFViewer = ({
     setInputPage(pageNumber.toString());
   };
 
-  // Word navigation handlers
+  // Handles changes in the word input field
   const handleWordInputChange = (e) => {
-    setInputWord(e.target.value);
+    const value = e.target.value;
+    if (/^\d*$/.test(value)) {
+      setInputWord(value);
+    }
   };
 
+  // Handles key down events in the word input field
+  const handleWordKeyDown = (e) => {
+    if (e.key === "Enter") {
+      handleWordSubmit(); // Confirm input on Enter
+    } else if (e.key === "ArrowRight") {
+      setInputWord((prev) => {
+        const newWord = (prev ? parseInt(prev, 10) : currentWordIndex) + 1;
+        return Math.min(newWord, allWords.length - 1).toString(); // Ensure within range
+      });
+    } else if (e.key === "ArrowLeft") {
+      setInputWord((prev) => {
+        const newWord = (prev ? parseInt(prev, 10) : currentWordIndex) - 1;
+        return Math.max(newWord, 0).toString(); // Ensure within range
+      });
+    }
+  };
+
+  // Handles the submission of the word input field
   const handleWordSubmit = () => {
     const wordNumber = parseInt(inputWord, 10);
 
@@ -87,6 +131,40 @@ const PDFViewer = ({
     }
   };
 
+  const handleWordClick = (wordIndex) => {
+    // Find paragraph containing the clicked word
+    const paragraphIndex = cumulativeWordCounts.findIndex((start, i) => {
+      const nextStart = cumulativeWordCounts[i + 1] || allWords.length;
+      return wordIndex >= start && wordIndex < nextStart;
+    });
+
+    if (paragraphIndex === -1) {
+      alert("Word not found in text");
+      return;
+    }
+
+    // Calculate the target page
+    let cumulativeParagraphs = 0;
+    let targetPage = 0;
+    for (let i = 0; i < pages.length; i++) {
+      const pageLength = pages[i].length;
+      if (paragraphIndex < cumulativeParagraphs + pageLength) {
+        targetPage = i + 1; // Pages are 1-indexed
+        break;
+      }
+      cumulativeParagraphs += pageLength;
+    }
+
+    // Update state to jump to the selected word
+    onPageChange(targetPage);
+    onCurrentWordChange(wordIndex);
+
+    // Change display state to "paused" if it was "idleDisplay"
+    if (displayState === "idleDisplay") {
+      onDisplayStateChange("paused");
+    }
+  };
+
   if (elementType === "text") {
     return (
       <div>
@@ -119,6 +197,7 @@ const PDFViewer = ({
               return (
                 <span
                   key={`${currentPage}-${paraIndexInCurrentPage}-${wordIndexInPara}`}
+                  onClick={() => handleWordClick(globalIndex)}
                   className={className}
                 >
                   {word}{" "}
@@ -146,8 +225,8 @@ const PDFViewer = ({
             type="number"
             value={inputWord}
             onChange={handleWordInputChange}
+            onKeyDown={handleWordKeyDown}
             title="Enter word number"
-            onKeyDown={(e) => e.key === "Enter" && handleWordSubmit()}
             placeholder={
               displayState === "idleDisplay"
                 ? allWords.length
@@ -168,7 +247,7 @@ const PDFViewer = ({
               value={inputPage}
               onChange={handlePageInputChange}
               title="Enter page number"
-              onKeyDown={(e) => e.key === "Enter" && handlePageSubmit()}
+              onKeyDown={handlePageKeyDown}
               min="1"
               max={pages.length}
               className="minimal-input"

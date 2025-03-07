@@ -29,10 +29,17 @@ const PDFStateManager = () => {
   const MIN_INTERVAL = 50; // Minimum interval value
   const MAX_INTERVAL = 1000; // Maximum interval value
 
+  // Handles the span count update
   const handleSpanCount = useCallback((count) => {
     setSpanCount(count);
   }, []);
 
+  // Handles the span click update
+  const handleSpanClick = useCallback((index) => {
+    setCurrentSpanCount(index);
+  }, []);
+
+  // Measures the width of the given text using a canvas context
   const measureText = useMemo(() => {
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
@@ -42,6 +49,7 @@ const PDFStateManager = () => {
     };
   }, [FONT_STYLE]);
 
+  // Calculates the number of lines needed for a given paragraph
   const calculateLines = useCallback(
     (paragraph) => {
       const words = paragraph.split(" ");
@@ -65,6 +73,7 @@ const PDFStateManager = () => {
     [measureText, CONTAINER_WIDTH]
   );
 
+  // Effect to process the extracted text and create pages
   useEffect(() => {
     if (!extractedText) return;
     const allWords = extractedText
@@ -153,7 +162,8 @@ const PDFStateManager = () => {
     setCumulativeWordCounts(cumulative);
   }, [extractedText, calculateLines, measureText]);
 
-  const handlePlayPause = () => {
+  // Handles play/pause functionality for the word display
+  const handlePlayPause = useCallback(() => {
     if (displayState === "playing") {
       clearInterval(intervalId);
       setIntervalId(null);
@@ -162,7 +172,7 @@ const PDFStateManager = () => {
       const newIntervalId = setInterval(() => {
         if (currentWordIndex < allWords.length - 1) {
           setCurrentWordIndex((prev) => prev + 1);
-          setCurrentSpanCount((prevCount) => prevCount + 1);
+          setCurrentSpanCount((prev) => prev + 1);
         } else {
           clearInterval(newIntervalId);
           setDisplayState("paused");
@@ -171,17 +181,22 @@ const PDFStateManager = () => {
       setIntervalId(newIntervalId);
       setDisplayState("playing");
     }
-  };
-
+  }, [
+    displayState,
+    intervalId,
+    currentWordIndex,
+    allWords.length,
+    intervalValue,
+  ]);
+  // Effect to handle page change when span count is reached
   useEffect(() => {
     if (currentSpanCount >= spanCount && currentSpanCount !== 0) {
       setCurrentSpanCount(0);
       setCurrentPage((prevPage) => prevPage + 1);
     }
-
-    // console.log("currentSpanCount updated:", currentSpanCount);
   }, [currentWordIndex, currentSpanCount, spanCount]);
 
+  // Handles the file upload and extraction of text from the PDF
   const handleUpload = async (file) => {
     try {
       setStatus("loading");
@@ -193,6 +208,7 @@ const PDFStateManager = () => {
     }
   };
 
+  // Handles closing the PDF and resetting the state
   const handleClose = () => {
     setExtractedText("");
     setPages([]);
@@ -203,7 +219,8 @@ const PDFStateManager = () => {
     setStatus("idle");
   };
 
-  const handleKeyDown = (event) => {
+  // Handles key down events for adjusting speed and closing the PDF
+  const handleKeyDown = useCallback((event) => {
     if (event.key === "ArrowUp") {
       setIntervalValue((prevInterval) =>
         Math.max(prevInterval - 50, MIN_INTERVAL)
@@ -214,17 +231,32 @@ const PDFStateManager = () => {
       );
     } else if (event.key === "Escape") {
       handleClose();
-    } else if (event.key === "Space") {
-      handlePlayPause();
     }
-  };
+  }, []);
 
+  // Effect to handle play/pause on space key press
+  useEffect(() => {
+    const handleKeyUp = (event) => {
+      if (event.key === " ") {
+        event.preventDefault(); // Prevents unwanted scrolling
+        handlePlayPause();
+      }
+    };
+
+    window.addEventListener("keyup", handleKeyUp);
+
+    return () => {
+      window.removeEventListener("keyup", handleKeyUp);
+    };
+  }, [handlePlayPause]);
+
+  // Effect to handle key down events
   useEffect(() => {
     window.addEventListener("keydown", handleKeyDown);
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, []);
+  }, [handleKeyDown]);
 
   let className = "word";
   if (displayState === "playing") {
@@ -256,7 +288,10 @@ const PDFStateManager = () => {
           </div>
           <div className="margin-top-3">
             <div className={className}>{fileName}</div>{" "}
-            <SpanCounter onSpanCount={handleSpanCount} />
+            <SpanCounter
+              onSpanCount={handleSpanCount}
+              onSpanClick={handleSpanClick}
+            />
             <PDFViewer
               pages={pages}
               currentPage={currentPage}
