@@ -18,7 +18,7 @@
 }
 
 .pagination-controls input {
-  width: 13px;
+  width: fit-content;
 }
 
 .word {
@@ -112,9 +112,10 @@
 
 /* Base input styling */
 .minimal-input {
-  width: 100%;
+  width: fit-content;
   padding: 10px 0;
-  font-size: 16px;
+  text-align: right;
+  font-size: 1rem;
   color: var(--grey);
   border: none;
   border-bottom: none;

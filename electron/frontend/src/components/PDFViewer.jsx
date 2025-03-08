@@ -220,7 +220,7 @@ const PDFViewer = ({
 
     return (
       <div className="flex-column">
-        <div className="width-fit">
+        <div className="width-fit flex-end width-100">
           <input
             type="number"
             value={inputWord}
@@ -240,7 +240,7 @@ const PDFViewer = ({
           />
         </div>
 
-        <div className="pagination-controls width-fit">
+        <div className="pagination-controls width-fit width-100">
           <div className="grey">
             <input
               type="number"
@@ -255,7 +255,7 @@ const PDFViewer = ({
               pattern="[0-9]*"
               required
             />
-            - {pages.length}
+            &#160;- {pages.length}
           </div>
         </div>
       </div>

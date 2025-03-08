@@ -1,16 +1,42 @@
 {
-  "name": "my-electron-app",
+  "name": "speed-reader",
   "version": "1.0.0",
-  "description": "Hello World!",
+  "description": "Minimal speed reader",
   "main": "main.js",
-  "author": "Jane Doe",
+  "author": "Silas Sequeira",
   "license": "MIT",
   "devDependencies": {
-    "electron": "^35.0.0"
+    "electron": "^35.0.0",
+    "electron-builder": "^25.1.8"
   },
   "scripts": {
-    "start": "set NODE_ENV=development && electron ."
+    "start": "electron .",
+    "build": "electron-builder"
   },
+  "build": {
+    "appId": "com.speed-reader",
+    "productName": "Speed Reader",
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "icon.ico"
+    },
+    "nsis": {
+      "oneClick": true,
+      "installerIcon": "icon.ico",
+      "uninstallerIcon": "icon.ico",
+      "uninstallDisplayName": "Uninstall Speed Reader",
+      "license": "LICENSE",
+      "allowToChangeInstallationDirectory": false
+    }
+  },
+  "keywords": [
+    "electron",
+    "speed-reader",
+    "pdf"
+  ],
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.21.2",
