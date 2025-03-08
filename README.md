@@ -2,7 +2,7 @@
 
 Minimal speed reader, allows you to insert a PDF file, adjust the interval speed between each word, and improve your reading speed.
 
-Link of the Installer: [text](https://drive.google.com/file/d/12-F0wheyQfAC_4Yj0op3nFSVMXT0HjYc/view?usp=sharing)
+Link of the Installer: [Click Here!](https://drive.google.com/file/d/12-F0wheyQfAC_4Yj0op3nFSVMXT0HjYc/view?usp=sharing)
 
 ## Features
 
