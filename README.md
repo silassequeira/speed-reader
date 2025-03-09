@@ -4,6 +4,16 @@ Minimal speed reader, allows you to insert a PDF file, adjust the interval speed
 
 Link of the Installer: [Click Here!](https://drive.google.com/file/d/12-F0wheyQfAC_4Yj0op3nFSVMXT0HjYc/view?usp=sharing)
 
+## Screenshots
+
+<img src="https://github.com/user-attachments/assets/2cda7283-b7e5-41fd-a844-0626ffe97bb6" width=75% height=75%>
+
+<img src="https://github.com/user-attachments/assets/36d2775d-77f8-4c46-b03f-8dd5433a112a" width=25% height=25%>
+
+<img src="https://github.com/user-attachments/assets/af9640b6-57f5-4f0d-9b4a-b91399a6def2" width=25% height=25%>
+
+<img src="https://github.com/user-attachments/assets/8665ec83-5e16-4fbe-a8dc-8096185c629a" width=25% height=25%>
+
 ## Features
 
 - Upload and parse PDF files
@@ -11,6 +21,7 @@ Link of the Installer: [Click Here!](https://drive.google.com/file/d/12-F0wheyQf
 - Simple and intuitive user interface
 - Dark mode support
 - Electron-based desktop application
+
 
 ## Installation
 
